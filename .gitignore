@@ -1,0 +1,6 @@
+# python ignores
+__pycache__
+
+# ide ignores
+.idea
+.vscode
