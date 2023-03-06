@@ -9,7 +9,7 @@ This example is a slightly modified version of OpenMV's offical jpg image transf
 3. **IMPORTANT:** If you are using a Windows computer, you must eject the camera from your computer before continuing. If you do not, the main.py file will not be updated.
 4. Reset the OpenMV by unplugging the camera and plugging it back in.
 5. In your terminal of choice, navigate to this folder and run `pip install -r requirements.txt`. This will install the required python packages.
-6. Run `python main.py` to start the example.
+6. Run `python jpg_streaming.py` to start the example.
 
 ## Note on python versions
 This example has been tested with python 3.6.8. It may work with other versions of python 3, but it has not been tested.
