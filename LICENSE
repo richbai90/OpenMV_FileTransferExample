@@ -1,4 +1,4 @@
-MIT License
+loc = location.rsplit(location, r).join("/") # normalize the path using forward slashesMIT License
 
 Copyright (c) 2023 Rich B
 

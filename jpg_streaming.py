@@ -9,7 +9,7 @@ import pygame
 import rpc
 import serial
 import serial.tools.list_ports
-import socket
+import os
 import struct
 import sys
 import time
@@ -43,6 +43,9 @@ interface = rpc.rpc_usb_vcp_master(port=input())
 sys.stdout.write("\n Please specify the delay between images in seconds: ")
 sys.stdout.flush()
 delay = input()
+sys.stdout.write("\n Please specify the location to save the iamges: ")
+sys.stdout.flush()
+location = input()
 print("")
 sys.stdout.flush()
 
@@ -149,7 +152,8 @@ while (True):
         try:
             # save the image to a file
             image = Image.open(io.BytesIO(img))
-            image.save(f"image{img_counter}.jpg")
+            location = os.path.join(location.replace("\\", "/"), f"image{img_counter}.jpg")
+            image.save(location)
             img_counter += 1
             # display the image on the screen
             screen.blit(pygame.transform.scale(pygame.image.load(
