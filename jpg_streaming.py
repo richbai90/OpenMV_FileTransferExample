@@ -152,7 +152,8 @@ while (True):
         try:
             # save the image to a file
             image = Image.open(io.BytesIO(img))
-            location = os.path.join(location.replace("\\", "/"), f"image{img_counter}.jpg")
+            location = location.split(os.path.sep)
+            location = os.path.join(*location, f"image{img_counter}.jpg")
             image.save(location)
             img_counter += 1
             # display the image on the screen
