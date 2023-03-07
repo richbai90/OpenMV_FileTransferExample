@@ -14,6 +14,8 @@ import struct
 import sys
 import time
 import PIL.Image as Image
+import argparse
+
 
 from array import array
 img_counter = 0
@@ -34,17 +36,35 @@ except NameError:
 #
 # * port - Serial Port Name.
 #
-print("\nAvailable Ports:\n")
-for port, desc, hwid in serial.tools.list_ports.comports():
-    print("{} : {} [{}]".format(port, desc, hwid))
-sys.stdout.write("\nPlease enter a port name: ")
-sys.stdout.flush()
-interface = rpc.rpc_usb_vcp_master(port=input())
-sys.stdout.write("\n Please specify the delay between images in seconds: ")
-sys.stdout.flush()
-delay = input()
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-p', '--port', help='serial port name')
+parser.add_argument('-d', '--delay', type=int, help='delay between images in seconds')
+args = parser.parse_args()
+interface = None
+
+if args.port:
+    port = args.port
+    interface = rpc.rpc_usb_vcp_master(port=port)
+else:
+    print("\nAvailable Ports:\n")
+    for port, desc, hwid in serial.tools.list_ports.comports():
+        print("{} : {} [{}]".format(port, desc, hwid))
+    sys.stdout.write("\nPlease enter a port name: ")
+    sys.stdout.flush()
+    port = input()
+    interface = rpc.rpc_usb_vcp_master(port=port)
+
+if args.delay:
+    delay = args.delay
+else:
+    sys.stdout.write("\nPlease specify the delay between images in seconds: ")
+    sys.stdout.flush()
+    delay = input()
+
 print("")
 sys.stdout.flush()
+
 
 # Uncomment the below line to setup your OpenMV Cam for controlling over WiFi.
 #
