@@ -3,7 +3,11 @@ import io
 import rpc
 import struct
 
-interface = rpc.rpc_usb_vcp_slave()
+interface = rpc.rpc_usb_vcp_master(port="COM4") # Change this to the port you are using.
+
+if interface is None:
+    print("Failed to connect to the remote device!")
+    exit()
 
 
 def get_frame_buffer_call_back(pixformat_str="sensor.GRAYSCALE", framesize_str="sensor.B128X128", cutthrough=True, silent=True):
