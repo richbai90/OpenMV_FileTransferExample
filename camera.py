@@ -2,15 +2,24 @@ from PIL import Image
 import io
 import rpc
 import struct
+import serial.tools.list_ports
 
-interface = rpc.rpc_usb_vcp_master(port="COM4") # Change this to the port you are using.
+def get_interface():
+    # list available ports
+    ports = serial.tools.list_ports.comports()
+    print("Available ports:")
+    for port in ports:
+        print(port.device)
+    
+    input_port = int(input("Enter the port you want to use: "))
+    port = ports[input_port].device
+    interface = rpc.rpc_usb_vcp_master(port=port) # Change this to the port you are using.
+    return interface
 
-if interface is None:
-    print("Failed to connect to the remote device!")
-    exit()
 
 
-def get_frame_buffer_call_back(pixformat_str="sensor.GRAYSCALE", framesize_str="sensor.B128X128", cutthrough=True, silent=True):
+
+def get_frame_buffer_call_back(interface, pixformat_str="sensor.GRAYSCALE", framesize_str="sensor.B128X128", cutthrough=True, silent=True):
     ''' Gets a frame buffer from the remote device.
 
     Gets a frame buffer in JPEG format from the remote device
@@ -82,8 +91,8 @@ def get_frame_buffer_call_back(pixformat_str="sensor.GRAYSCALE", framesize_str="
     return None
 
 
-def get_image():
-    img = get_frame_buffer_call_back()
+def get_image(interface):
+    img = get_frame_buffer_call_back(interface)
     if img is not None:
         # save the image to a file
         image = Image.open(io.BytesIO(img))
