@@ -127,7 +127,7 @@ if __name__ == "__main__":
         # Handle the capture of the image
         # This is done after the delay/2 to ensure that the correct image is being displayed
         if elapsed_time >= delay/2 and not img_captured:
-            img = camera.get_image()
+            img = camera.get_image(interface)
             if img is not None:
                 img.save(os.path.join(img_path, str(imgs_displayed) + ".jpg"))
                 img_captured = True
