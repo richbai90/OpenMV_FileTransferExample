@@ -1,3 +1,3 @@
-py %~dp0/main.py "image folder" "output folder" "delay"
+py %~dp0/main.py "image folder" "delay" "output folder"
 
 
