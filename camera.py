@@ -1,5 +1,5 @@
-from PIL import Image
-import io
+from cv2 import cv2
+import numpy as np
 import rpc
 import struct
 import serial.tools.list_ports
@@ -19,7 +19,7 @@ def get_interface():
 
 
 
-def get_frame_buffer_call_back(interface, pixformat_str="sensor.GRAYSCALE", framesize_str="sensor.B128X128", cutthrough=True, silent=True):
+def get_frame_buffer_call_back(interface, pixformat_str="sensor.GRAYSCALE", framesize_str="sensor.VGA", framerate_str="10", cutthrough=True, silent=True):
     ''' Gets a frame buffer from the remote device.
 
     Gets a frame buffer in JPEG format from the remote device
@@ -29,7 +29,8 @@ def get_frame_buffer_call_back(interface, pixformat_str="sensor.GRAYSCALE", fram
     Parameters
     ----------
     pixformat_str : str (optional) The pixel format to use. Default is "sensor.GRAYSCALE".
-    framesize_str : str (optional) The frame size to use. Default is "sensor.B128X128" (128x128px).
+    framesize_str : str (optional) The frame size to use. Default is "sensor.VGA". (VGA = 640x480)
+    framerate_str : str (optional) The frame rate to use. Default is "10".
     cutthrough : bool (optional) If True then the data is transferred in one large chunk with no error checking. If False then the data is transferred in 32 KB chunks with error checking. Default is True.
     silent : bool (optional) If True then no debug messages are printed. Default is True.
     '''
@@ -37,7 +38,7 @@ def get_frame_buffer_call_back(interface, pixformat_str="sensor.GRAYSCALE", fram
         print("Getting Remote Frame...")
 
     result = interface.call("jpeg_image_snapshot", "%s,%s" %
-                            (pixformat_str, framesize_str))
+                            (pixformat_str, framesize_str, framerate_str))
     if result is not None:
 
         size = struct.unpack("<I", result)[0]
@@ -91,10 +92,19 @@ def get_frame_buffer_call_back(interface, pixformat_str="sensor.GRAYSCALE", fram
     return None
 
 
-def get_image(interface):
+def capture_image(interface: rpc.rpc_usb_vcp_master) -> np.ndarray:
+    ''' Captures an image from the remote device.
+    
+    Captures an image from the remote device and returns it as a numpy array. Suitable for use with OpenCV.
+    
+    Parameters
+    ----------
+    interface : rpc.rpc_usb_vcp_master The interface to use.
+    '''    
     img = get_frame_buffer_call_back(interface)
     if img is not None:
         # save the image to a file
-        image = Image.open(io.BytesIO(img))
+        np_arr = np.frombuffer(img, np.uint8)
+        image = cv2.imdecode(np_arr, cv2.IMREAD_GRAYSCALE)
         return image
     return None

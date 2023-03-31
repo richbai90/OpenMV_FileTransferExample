@@ -3,6 +3,7 @@ import os
 import sys
 import camera
 import logging
+import processing
 
 
 def load_images_from_folder(folder, start, end) -> tuple:
@@ -79,6 +80,7 @@ if __name__ == "__main__":
     start_index = 0
     end_index = 100
     imgs_displayed = 0
+    load_first_batch = True
     last_img = False
     images = []
     img_captured = False
@@ -86,7 +88,8 @@ if __name__ == "__main__":
         # Handle the loading of images in batches of 100
         # As well as the loading of the last batch of images
         # And the stopping of the program when the last image is displayed
-        if imgs_displayed >= end_index or imgs_displayed == 0:
+        if imgs_displayed >= end_index or load_first_batch:
+            load_first_batch = False
             if (last_img):
                 logger.debug("Last image displayed")
                 break
@@ -127,7 +130,9 @@ if __name__ == "__main__":
         # Handle the capture of the image
         # This is done after the delay/2 to ensure that the correct image is being displayed
         if elapsed_time >= delay/2 and not img_captured:
-            img = camera.get_image(interface)
+            imgs = [img for img in range(10).map(lambda _: camera.capture_image(interface)) if img is not None]
+            # stack images
+            img = processing.stackImagesECC(imgs)
             if img is not None:
                 img.save(os.path.join(img_path, str(imgs_displayed) + ".jpg"))
                 img_captured = True

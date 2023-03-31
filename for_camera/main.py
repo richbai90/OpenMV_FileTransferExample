@@ -10,10 +10,8 @@ sensor.reset()
 # The AI expects images in grayscale
 sensor.set_pixformat(sensor.GRAYSCALE)
 # The AI expects images of 128x128 pixels
-sensor.set_framesize(sensor.B128X128) 
+sensor.set_framesize(sensor.VGA) 
 sensor.skip_frames(time = 2000)
-P0 = Pin(0, Pin.Out) # tell the controller we have taken a picture
-P1 = Pin(1, Pin.In) # wait for the controller to tell us to take the picture
 
 # Turn off the frame buffer connection to the IDE from the OpenMV Cam side.
 #
@@ -59,17 +57,16 @@ interface = rpc.rpc_usb_vcp_slave()
 #
 # data is a pixformat string and framesize string.
 def jpeg_image_snapshot(data):
-    pixformat, framesize = bytes(data).decode().split(",")
+    pixformat, framesize, framerate = bytes(data).decode().split(",")
     sensor.set_pixformat(eval(pixformat))
     sensor.set_framesize(eval(framesize))
-    img = sensor.snapshot().compress(quality=90)
+    sensor.set_framerate(eval(framerate))
+    img = sensor.snapshot().compress(quality=100)
     return struct.pack("<I", img.size())
 
 def jpeg_image_read_cb():
     interface.put_bytes(sensor.get_fb().bytearray(), 5000) # timeout
-    P0.value(1) # tell the controller we have sent the picture
     time.sleep(0.1)
-    P0.value(0) 
 
 # Read data from the frame buffer given a offset and size.
 # If data is empty then a transfer is scheduled after the RPC call finishes.
