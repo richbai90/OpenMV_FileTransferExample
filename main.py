@@ -130,7 +130,7 @@ if __name__ == "__main__":
         # Handle the capture of the image
         # This is done after the delay/2 to ensure that the correct image is being displayed
         if elapsed_time >= delay/2 and not img_captured:
-            imgs = [img for img in range(10).map(lambda _: camera.capture_image(interface)) if img is not None]
+            imgs = [img for img in map(range(10), lambda _: camera.capture_image(interface)) if img is not None]
             # stack images
             img = processing.stackImagesECC(imgs)
             if img is not None:
