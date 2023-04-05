@@ -33,7 +33,7 @@ def stackImagesECC(im_list: np.ndarray):
             s, M = cv2.findTransformECC(
                 image, first_image, M, cv2.MOTION_HOMOGRAPHY)
             
-            w, h, _ = image.shape # width, height of the image
+            w, h = image.shape # width, height of the image
             
             # Correcting Image Alignment with respect to First_Image
             # Warping perspective transforms the source image (new frame) using known transformation matrix and size of the new image.
@@ -48,3 +48,15 @@ def stackImagesECC(im_list: np.ndarray):
 
     # return the final stacked-image
     return stacked_image
+
+def save_image(image: np.ndarray, filename: str):
+    '''Saves an image to a file.
+    
+    Saves an image to a file.
+    
+    Parameters
+    ----------
+    image : np.ndarray (required) The image to save.
+    filename : str (required) The filename to save the image to.
+    '''
+    cv2.imwrite(filename, image)

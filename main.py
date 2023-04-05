@@ -130,11 +130,11 @@ if __name__ == "__main__":
         # Handle the capture of the image
         # This is done after the delay/2 to ensure that the correct image is being displayed
         if elapsed_time >= delay/2 and not img_captured:
-            imgs = [img for img in map(lambda _: camera.capture_image(interface), range(10)) if img is not None]
+            imgs = [img for img in map(lambda _: camera.capture_image(interface, exposure_us=500), range(10)) if img is not None]
             # stack images
             img = processing.stackImagesECC(imgs)
             if img is not None:
-                img.save(os.path.join(img_path, str(imgs_displayed) + ".jpg"))
+                processing.save_image(img, os.path.join(img_path, str(imgs_displayed) + ".jpg"))
                 img_captured = True
                 logger.debug(f"Captured image {imgs_displayed}.jpg")
             else:

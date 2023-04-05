@@ -4,13 +4,11 @@
 #
 # This script shows off how to transfer the frame buffer to your computer as a jpeg image.
 
-import image, network, omv, rpc, sensor, struct, Pin, time
+import image, network, omv, rpc, sensor, struct
 
 sensor.reset()
-# The AI expects images in grayscale
-sensor.set_pixformat(sensor.GRAYSCALE)
-# The AI expects images of 128x128 pixels
-sensor.set_framesize(sensor.VGA) 
+sensor.set_pixformat(sensor.RGB565)
+sensor.set_framesize(sensor.QVGA)
 sensor.skip_frames(time = 2000)
 
 # Turn off the frame buffer connection to the IDE from the OpenMV Cam side.
@@ -57,16 +55,17 @@ interface = rpc.rpc_usb_vcp_slave()
 #
 # data is a pixformat string and framesize string.
 def jpeg_image_snapshot(data):
-    pixformat, framesize, framerate = bytes(data).decode().split(",")
+    pixformat, framesize, exposure_time = bytes(data).decode().split(",")
     sensor.set_pixformat(eval(pixformat))
     sensor.set_framesize(eval(framesize))
-    sensor.set_framerate(eval(framerate))
+    sensor.set_auto_exposure(False, exposure_us=eval(exposure_time))
+    sensor.set_gainceiling(128)
+    sensor.set_autogain(True)
     img = sensor.snapshot().compress(quality=100)
     return struct.pack("<I", img.size())
 
 def jpeg_image_read_cb():
     interface.put_bytes(sensor.get_fb().bytearray(), 5000) # timeout
-    time.sleep(0.1)
 
 # Read data from the frame buffer given a offset and size.
 # If data is empty then a transfer is scheduled after the RPC call finishes.
